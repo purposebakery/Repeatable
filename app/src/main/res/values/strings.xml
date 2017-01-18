@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Repeatable Notes</string>
+    <string name="action_sync">Sync</string>
+
+    <string name="alert_ok">OK</string>
+    <string name="alert_cancel">Cancel</string>
+    <string name="alert_delete">Delete</string>
+
+
+    <string name="category">Category</string>
+    <string name="category_name">Name</string>
+    <string name="category_color">Color</string>
+
+
+    <string name="item">Item</string>
+    <string name="item_name">Name</string>
+
+</resources>
