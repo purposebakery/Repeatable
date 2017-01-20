@@ -12,6 +12,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
+import com.google.android.gms.plus.Plus;
 
 import java.lang.ref.WeakReference;
 
@@ -47,7 +48,7 @@ public class GoogleDriveBackup implements Backup, GoogleApiClient.OnConnectionFa
     }
 
     @Override
-    public GoogleApiClient getClient(){
+    public GoogleApiClient getClient() {
         return googleApiClient;
     }
 

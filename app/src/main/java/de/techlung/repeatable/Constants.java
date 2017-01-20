@@ -4,7 +4,8 @@ import android.support.annotation.ColorInt;
 
 public class Constants {
 
-    public static @ColorInt
+    public static
+    @ColorInt
     int[] COLOR_RESOURCE_IDS = {
             R.color.md_red_500,
             R.color.md_pink_500,

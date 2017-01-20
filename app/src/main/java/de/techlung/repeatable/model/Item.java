@@ -11,6 +11,25 @@ public class Item extends RealmObject {
 
     String name;
     boolean isChecked;
+    int categoryId;
+    Category category;
+
+    public static int createPrimaryKey() {
+        Number lastItem = Realm.getDefaultInstance().where(Item.class).max("id");
+        if (lastItem == null) {
+            return 1;
+        } else {
+            return lastItem.intValue() + 1;
+        }
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
 
     public int getId() {
         return id;
@@ -36,12 +55,11 @@ public class Item extends RealmObject {
         isChecked = checked;
     }
 
-    public static int createPrimaryKey() {
-        Number lastItem = Realm.getDefaultInstance().where(Item.class).max("id");
-        if (lastItem == null) {
-            return 1;
-        } else {
-            return lastItem.intValue() + 1;
-        }
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

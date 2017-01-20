@@ -22,20 +22,29 @@ import de.techlung.repeatable.model.Item;
 public abstract class AbstractExpandableDataProvider {
 
     public abstract int getGroupCount();
+
     public abstract int getChildCount(int groupPosition);
 
     public abstract Category getGroupItem(int groupPosition);
+
     public abstract Item getChildItem(int groupPosition, int childPosition);
 
     public abstract void removeChildItem(int groupPosition, int childPosition);
+
     public abstract void removeGroupItem(int groupPosition);
 
     public abstract void addChildItem(int groupPosition, int childPosition);
+
     public abstract void addGroupItem(int groupPosition);
 
     public abstract boolean isGroupExpanded(int groupPosition);
 
     public abstract void collapseGroup(int groupPosition);
+
     public abstract void expandGroup(int groupPosition);
+
+    public abstract void editedGroup(int groupPosition);
+
+    public abstract void editedChild(int groupPosition, int childPosition);
 
 }

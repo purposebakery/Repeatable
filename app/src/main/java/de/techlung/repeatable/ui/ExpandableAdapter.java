@@ -18,7 +18,6 @@ package de.techlung.repeatable.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.provider.ContactsContract;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,7 +33,6 @@ import com.h6ah4i.android.widget.advrecyclerview.utils.RecyclerViewAdapterUtils;
 
 import de.techlung.repeatable.Constants;
 import de.techlung.repeatable.DataManager;
-import de.techlung.repeatable.MainActivity;
 import de.techlung.repeatable.R;
 import de.techlung.repeatable.model.Category;
 import de.techlung.repeatable.model.Item;
@@ -42,47 +40,8 @@ import de.techlung.repeatable.model.Item;
 public class ExpandableAdapter
         extends AbstractExpandableItemAdapter<ExpandableAdapter.MyGroupViewHolder, ExpandableAdapter.MyChildViewHolder> {
     private static final String TAG = "MyExpandableItemAdapter";
-
-    // NOTE: Make accessible with short name
-    private interface Expandable extends ExpandableItemConstants {
-    }
-
     private AbstractExpandableDataProvider provider;
     private Context context;
-
-    public static class MyGroupViewHolder extends AbstractExpandableItemViewHolder {
-        public RelativeLayout container;
-        public TextView text;
-        public View add;
-        public View edit;
-        public View colorIndicator;
-
-        public MyGroupViewHolder(View v) {
-            super(v);
-            container = (RelativeLayout) v.findViewById(R.id.container);
-            text = (TextView) v.findViewById(R.id.text);
-            add = v.findViewById(R.id.add);
-            edit = v.findViewById(R.id.edit);
-            colorIndicator = v.findViewById(R.id.colorIndicator);
-        }
-    }
-
-    public static class MyChildViewHolder extends AbstractExpandableItemViewHolder {
-        public RelativeLayout container;
-        public TextView name;
-        public View edit;
-        public AppCompatCheckBox checkBox;
-        public View colorIndicator;
-
-        public MyChildViewHolder(View v) {
-            super(v);
-            container = (RelativeLayout) v.findViewById(R.id.container);
-            name = (TextView) v.findViewById(R.id.name);
-            edit = v.findViewById(R.id.edit);
-            checkBox = (AppCompatCheckBox) v.findViewById(R.id.checked);
-            colorIndicator = v.findViewById(R.id.colorIndicator);
-        }
-    }
 
     public ExpandableAdapter(Context context, AbstractExpandableDataProvider dataProvider) {
         this.provider = dataProvider;
@@ -161,7 +120,7 @@ public class ExpandableAdapter
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == DialogInterface.BUTTON_POSITIVE) {
-
+                            provider.editedGroup(groupPosition);
                         } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                             provider.removeGroupItem(groupPosition);
                         }
@@ -244,8 +203,8 @@ public class ExpandableAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == DialogInterface.BUTTON_NEGATIVE) {
                             provider.removeChildItem(groupPosition, childPosition);
-                        } else {
-                            MainActivity.getInstance().loadList();
+                        } else if (which == DialogInterface.BUTTON_POSITIVE) {
+                            provider.editedChild(groupPosition, childPosition);
                         }
                     }
                 });
@@ -269,5 +228,43 @@ public class ExpandableAdapter
     @Override
     public boolean onCheckCanExpandOrCollapseGroup(MyGroupViewHolder holder, int groupPosition, int x, int y, boolean expand) {
         return false;
+    }
+
+    // NOTE: Make accessible with short name
+    private interface Expandable extends ExpandableItemConstants {
+    }
+
+    public static class MyGroupViewHolder extends AbstractExpandableItemViewHolder {
+        public RelativeLayout container;
+        public TextView text;
+        public View add;
+        public View edit;
+        public View colorIndicator;
+
+        public MyGroupViewHolder(View v) {
+            super(v);
+            container = (RelativeLayout) v.findViewById(R.id.container);
+            text = (TextView) v.findViewById(R.id.text);
+            add = v.findViewById(R.id.add);
+            edit = v.findViewById(R.id.edit);
+            colorIndicator = v.findViewById(R.id.colorIndicator);
+        }
+    }
+
+    public static class MyChildViewHolder extends AbstractExpandableItemViewHolder {
+        public RelativeLayout container;
+        public TextView name;
+        public View edit;
+        public AppCompatCheckBox checkBox;
+        public View colorIndicator;
+
+        public MyChildViewHolder(View v) {
+            super(v);
+            container = (RelativeLayout) v.findViewById(R.id.container);
+            name = (TextView) v.findViewById(R.id.name);
+            edit = v.findViewById(R.id.edit);
+            checkBox = (AppCompatCheckBox) v.findViewById(R.id.checked);
+            colorIndicator = v.findViewById(R.id.colorIndicator);
+        }
     }
 }

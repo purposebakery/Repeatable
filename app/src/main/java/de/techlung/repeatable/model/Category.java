@@ -1,10 +1,5 @@
 package de.techlung.repeatable.model;
 
-import android.support.annotation.ColorInt;
-
-import java.util.ArrayList;
-
-import de.techlung.repeatable.R;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -18,6 +13,15 @@ public class Category extends RealmObject {
     String name;
     int colorIndex;
     RealmList<Item> items;
+
+    public static int createPrimaryKey() {
+        Number lastCategory = Realm.getDefaultInstance().where(Category.class).max("id");
+        if (lastCategory == null) {
+            return 1;
+        } else {
+            return lastCategory.intValue() + 1;
+        }
+    }
 
     public int getId() {
         return id;
@@ -49,15 +53,6 @@ public class Category extends RealmObject {
 
     public void setItems(RealmList<Item> items) {
         this.items = items;
-    }
-
-    public static int createPrimaryKey() {
-        Number lastCategory = Realm.getDefaultInstance().where(Category.class).max("id");
-        if (lastCategory == null) {
-            return 1;
-        } else {
-            return lastCategory.intValue() + 1;
-        }
     }
 
 }

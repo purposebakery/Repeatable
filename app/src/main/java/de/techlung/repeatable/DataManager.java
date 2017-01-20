@@ -2,16 +2,13 @@ package de.techlung.repeatable;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.SeekBar;
 
 import java.util.List;
@@ -19,7 +16,6 @@ import java.util.List;
 import de.techlung.repeatable.model.Category;
 import de.techlung.repeatable.model.Item;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmQuery;
 
 public class DataManager {
@@ -35,6 +31,8 @@ public class DataManager {
 
             Realm.getDefaultInstance().beginTransaction();
             editItem = Realm.getDefaultInstance().createObject(Item.class, Item.createPrimaryKey());
+            editItem.setCategory(category);
+            editItem.setCategoryId(category.getId());
             Realm.getDefaultInstance().commitTransaction();
         } else {
             isNew = false;
@@ -206,6 +204,14 @@ public class DataManager {
     public static List<Category> getAllCategories() {
         RealmQuery<Category> query = Realm.getDefaultInstance().where(Category.class);
         return query.findAll();
+    }
+
+    public static long getAllItemsActiveCount() {
+        return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).count();
+    }
+
+    public static List<Item> getAllItemsActive() {
+        return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).findAllSorted("categoryId");
     }
 
     public static void toggleCheck(Item item) {

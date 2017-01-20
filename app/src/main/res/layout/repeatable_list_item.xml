@@ -8,44 +8,45 @@
         android:id="@+id/colorIndicator"
         android:layout_width="6dp"
         android:layout_height="48dp"
-        android:background="@color/md_green_500"/>
+        android:background="@color/md_green_500" />
 
     <android.support.v7.widget.AppCompatCheckBox
         android:id="@+id/checked"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_toRightOf="@+id/colorIndicator"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_centerVertical="true"
         android:layout_marginLeft="8dp"
-        android:layout_centerVertical="true" />
+        android:layout_toRightOf="@+id/colorIndicator"
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/name"
-        android:text="This is some text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_centerVertical="true"
-        android:layout_width="match_parent"
-        android:fontFamily="sans-serif-light"
-        android:textColor="@color/md_black_1000"
-        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/edit"
         android:layout_toRightOf="@+id/checked"
-        android:layout_toLeftOf="@+id/edit"/>
+        android:fontFamily="sans-serif-light"
+        android:text="This is some text"
+        android:textColor="@color/md_black_1000" />
 
     <RelativeLayout
         android:id="@+id/edit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_width="48dp"
-        android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_height="48dp">
+        android:layout_marginRight="16dp">
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_mode_edit_black_24dp"/>
+            android:src="@drawable/ic_mode_edit_black_24dp" />
 
 
     </RelativeLayout>

@@ -1,20 +1,20 @@
 package de.techlung.repeatable;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
 import com.h6ah4i.android.widget.advrecyclerview.animator.RefactoredDefaultItemAnimator;
@@ -26,6 +26,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.techlung.repeatable.backup.BackupManager;
 import de.techlung.repeatable.generic.BaseActivity;
 import de.techlung.repeatable.model.Category;
 import de.techlung.repeatable.model.Item;
@@ -37,21 +38,95 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
         RecyclerViewExpandableItemManager.OnGroupExpandListener {
 
     private static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewExpandableItemManager";
-
+    private static MainActivity instance;
     @InjectView(R.id.recycler_view)
     RecyclerView recyclerView;
     @InjectView(R.id.fab)
     FloatingActionButton fab;
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
-
     private List<Category> categoryList = new ArrayList<>();
-
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
     private RecyclerViewExpandableItemManager itemManager;
+    AbstractExpandableDataProvider provider = new AbstractExpandableDataProvider() {
 
-    private static MainActivity instance;
+        @Override
+        public int getGroupCount() {
+            return categoryList.size();
+        }
+
+        @Override
+        public int getChildCount(int groupPosition) {
+            return categoryList.get(groupPosition).getItems().size();
+        }
+
+        @Override
+        public Category getGroupItem(int groupPosition) {
+            return categoryList.get(groupPosition);
+        }
+
+        @Override
+        public Item getChildItem(int groupPosition, int childPosition) {
+            return categoryList.get(groupPosition).getItems().get(childPosition);
+        }
+
+        @Override
+        public void addChildItem(int groupPosition, int childPosition) {
+            loadList();
+            itemManager.notifyChildItemInserted(groupPosition, childPosition);
+        }
+
+        @Override
+        public void addGroupItem(int groupPosition) {
+            loadList();
+            itemManager.notifyGroupItemInserted(groupPosition);
+        }
+
+        @Override
+        public boolean isGroupExpanded(int groupPosition) {
+            loadList();
+            return itemManager.isGroupExpanded(groupPosition);
+
+        }
+
+        @Override
+        public void collapseGroup(int groupPosition) {
+            loadList();
+            itemManager.collapseGroup(groupPosition);
+        }
+
+        @Override
+        public void expandGroup(int groupPosition) {
+            loadList();
+            itemManager.expandGroup(groupPosition);
+        }
+
+        @Override
+        public void editedGroup(int groupPosition) {
+            loadList();
+            itemManager.notifyGroupItemChanged(groupPosition);
+        }
+
+        @Override
+        public void editedChild(int groupPosition, int childPosition) {
+            loadList();
+            itemManager.notifyChildItemChanged(groupPosition, childPosition);
+        }
+
+        @Override
+        public void removeGroupItem(int groupPosition) {
+            loadList();
+            itemManager.notifyGroupItemRemoved(groupPosition);
+        }
+
+        @Override
+        public void removeChildItem(int groupPosition, int childPosition) {
+            loadList();
+            itemManager.notifyChildItemRemoved(groupPosition, childPosition);
+        }
+    };
+    private BackupManager backupManager;
 
     public static MainActivity getInstance() {
         return instance;
@@ -79,6 +154,24 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
         categoryList.addAll(DataManager.getAllCategories());
 
         initList(savedInstanceState);
+
+
+        initBackupManager();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (backupManager != null) {
+            backupManager.destroy();
+        }
+    }
+
+    private void initBackupManager() {
+        if (backupManager == null) {
+            backupManager = new BackupManager(this);
+        }
     }
 
     @Override
@@ -91,10 +184,27 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_sync) {
+        if (id == R.id.loadBackup) {
+            initBackupManager();
+            backupManager.openFilePicker();
+            return true;
+        } else if (id == R.id.createBackup) {
+            initBackupManager();
+            backupManager.openFolderPicker();
+            return true;
+        } else if (id == R.id.about) {
+            showAbout();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (backupManager != null) {
+            backupManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     public void loadList() {
@@ -106,8 +216,8 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
         DataManager.createOrEditCategory(this, null, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (which == DialogInterface.BUTTON_POSITIVE){
-                    provider.addGroupItem(categoryList.size() - 1);
+                if (which == DialogInterface.BUTTON_POSITIVE) {
+                    provider.addGroupItem(categoryList.size());
                 }
             }
         });
@@ -164,66 +274,27 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
 
     }
 
-    AbstractExpandableDataProvider provider = new AbstractExpandableDataProvider() {
-
-        @Override
-        public int getGroupCount() {
-            return categoryList.size();
-        }
-
-        @Override
-        public int getChildCount(int groupPosition) {
-            return categoryList.get(groupPosition).getItems().size();
-        }
-
-        @Override
-        public Category getGroupItem(int groupPosition) {
-            return categoryList.get(groupPosition);
-        }
-
-        @Override
-        public Item getChildItem(int groupPosition, int childPosition) {
-            return categoryList.get(groupPosition).getItems().get(childPosition);
-        }
-
-        @Override
-        public void addChildItem(int groupPosition, int childPosition) {
-            itemManager.notifyChildItemInserted(groupPosition, childPosition);
-        }
-
-        @Override
-        public void addGroupItem(int groupPosition) {
-            itemManager.notifyGroupItemInserted(groupPosition);
-        }
-
-        @Override
-        public boolean isGroupExpanded(int groupPosition) {
-            return itemManager.isGroupExpanded(groupPosition);
-        }
-
-        @Override
-        public void collapseGroup(int groupPosition) {
-            itemManager.collapseGroup(groupPosition);
-        }
-
-        @Override
-        public void expandGroup(int groupPosition) {
-            itemManager.expandGroup(groupPosition);
-        }
-
-        @Override
-        public void removeGroupItem(int groupPosition) {
-            itemManager.notifyGroupItemRemoved(groupPosition);
-        }
-
-        @Override
-        public void removeChildItem(int groupPosition, int childPosition) {
-            itemManager.notifyChildItemRemoved(groupPosition, childPosition);
-        }
-    };
-
     public AbstractExpandableDataProvider getDataProvider() {
         return provider;
+    }
+
+    private void showAbout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.app_name);
+
+        String aboutFirst = getString(R.string.about_messagae);
+        String aboutSecond = getString(R.string.about_icon_credit);
+
+        builder.setMessage(aboutFirst + aboutSecond);
+
+        builder.setPositiveButton(R.string.alert_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
 }
