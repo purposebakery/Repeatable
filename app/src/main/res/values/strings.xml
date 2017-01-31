@@ -19,4 +19,10 @@
     <string name="about_messagae">by Oliver Metz for Ella \nhttps://github.com/techlung/Repeatable\n\n</string>
     <string name="about_icon_credit">App Icon made by Freepik from www.flaticon.com is licensed by CC 3.0 BY</string>
 
+    <string name="widget_config">Repeatable Notes Widget Settings</string>
+    <string name="widget_config_select_category">Select a Category</string>
+    <string name="widget_config_all_categories">ALL CATEGORIES</string>
+    <string name="widget_item_complete">Item completed</string>
+    <string name="widget_loading">Loading…</string>
+
 </resources>

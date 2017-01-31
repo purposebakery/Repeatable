@@ -23,6 +23,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -36,6 +37,7 @@ import de.techlung.repeatable.DataManager;
 import de.techlung.repeatable.R;
 import de.techlung.repeatable.model.Category;
 import de.techlung.repeatable.model.Item;
+import de.techlung.repeatable.widget.WidgetProvider;
 
 public class ExpandableAdapter
         extends AbstractExpandableItemAdapter<ExpandableAdapter.MyGroupViewHolder, ExpandableAdapter.MyChildViewHolder> {
@@ -59,8 +61,7 @@ public class ExpandableAdapter
 
     @Override
     public int getChildCount(int groupPosition) {
-        int childCount = provider.getChildCount(groupPosition);
-        return childCount;
+        return provider.getChildCount(groupPosition);
     }
 
     @Override
@@ -155,14 +156,18 @@ public class ExpandableAdapter
 
         if ((expandState & ExpandableItemConstants.STATE_FLAG_IS_UPDATED) != 0) {
             int bgResId;
+            int openIcon;
 
             if ((expandState & Expandable.STATE_FLAG_IS_EXPANDED) != 0) {
                 bgResId = Constants.COLOR_RESOURCE_IDS[category.getColorIndex()];
+                openIcon = R.drawable.ic_keyboard_arrow_up_black_24dp;
             } else {
                 bgResId = android.R.color.white;
+                openIcon = R.drawable.ic_keyboard_arrow_down_black_24dp;
             }
 
             holder.container.setBackgroundResource(bgResId);
+            holder.openIcon.setImageResource(openIcon);
         }
     }
 
@@ -183,6 +188,8 @@ public class ExpandableAdapter
             public void onClick(View v) {
                 DataManager.toggleCheck(item);
                 holder.checkBox.setChecked(item.getChecked());
+
+                WidgetProvider.reloadWidgets(context);
             }
         };
 
@@ -234,31 +241,33 @@ public class ExpandableAdapter
     private interface Expandable extends ExpandableItemConstants {
     }
 
-    public static class MyGroupViewHolder extends AbstractExpandableItemViewHolder {
-        public RelativeLayout container;
-        public TextView text;
-        public View add;
-        public View edit;
-        public View colorIndicator;
+    static class MyGroupViewHolder extends AbstractExpandableItemViewHolder {
+        RelativeLayout container;
+        TextView text;
+        View add;
+        View edit;
+        View colorIndicator;
+        ImageView openIcon;
 
-        public MyGroupViewHolder(View v) {
+        MyGroupViewHolder(View v) {
             super(v);
             container = (RelativeLayout) v.findViewById(R.id.container);
             text = (TextView) v.findViewById(R.id.text);
             add = v.findViewById(R.id.add);
             edit = v.findViewById(R.id.edit);
             colorIndicator = v.findViewById(R.id.colorIndicator);
+            openIcon = (ImageView) v.findViewById(R.id.openIcon);
         }
     }
 
-    public static class MyChildViewHolder extends AbstractExpandableItemViewHolder {
-        public RelativeLayout container;
-        public TextView name;
-        public View edit;
-        public AppCompatCheckBox checkBox;
-        public View colorIndicator;
+    static class MyChildViewHolder extends AbstractExpandableItemViewHolder {
+        RelativeLayout container;
+        TextView name;
+        View edit;
+        AppCompatCheckBox checkBox;
+        View colorIndicator;
 
-        public MyChildViewHolder(View v) {
+        MyChildViewHolder(View v) {
             super(v);
             container = (RelativeLayout) v.findViewById(R.id.container);
             name = (TextView) v.findViewById(R.id.name);

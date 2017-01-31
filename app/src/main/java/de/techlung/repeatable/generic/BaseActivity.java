@@ -3,6 +3,7 @@ package de.techlung.repeatable.generic;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import de.techlung.repeatable.preferences.Preferences;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -17,6 +18,8 @@ public class BaseActivity extends AppCompatActivity {
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
         Realm.setDefaultConfiguration(config);
+
+        Preferences.init(this);
     }
 
     @Override

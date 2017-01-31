@@ -11,6 +11,25 @@
         android:layout_height="80dp"
         android:background="@color/md_amber_500" />
 
+
+    <RelativeLayout
+        android:id="@+id/open"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/colorIndicator">
+
+        <ImageView
+            android:id="@+id/openIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_keyboard_arrow_down_black_24dp" />
+
+
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
@@ -19,8 +38,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_toLeftOf="@+id/add"
-        android:layout_toRightOf="@+id/colorIndicator"
-        android:layout_toStartOf="@+id/add"
+        android:layout_toRightOf="@+id/open"
         android:ellipsize="end"
         android:fontFamily="sans-serif-light"
         android:lines="1"
@@ -54,9 +72,7 @@
         android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp">
+        android:layout_centerVertical="true">
 
         <ImageView
             android:layout_width="24dp"
@@ -66,5 +82,6 @@
 
 
     </RelativeLayout>
+
 
 </RelativeLayout>

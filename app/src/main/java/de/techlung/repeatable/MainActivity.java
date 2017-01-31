@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -154,7 +153,6 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
         categoryList.addAll(DataManager.getAllCategories());
 
         initList(savedInstanceState);
-
 
         initBackupManager();
 

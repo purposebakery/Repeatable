@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -206,17 +207,46 @@ public class DataManager {
         return query.findAll();
     }
 
+    public static Category getCategory(int id) {
+        RealmQuery<Category> query = Realm.getDefaultInstance().where(Category.class);
+        query.equalTo("id", id);
+        return query.findFirst();
+    }
+
+
     public static long getAllItemsActiveCount() {
         return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).count();
+    }
+
+    public static long getCategoryItemsActiveCount(int categoryId) {
+        return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).equalTo("categoryId", categoryId).count();
     }
 
     public static List<Item> getAllItemsActive() {
         return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).findAllSorted("categoryId");
     }
 
+    public static List<Item> getCategoryItemsActive(int categoryId) {
+        return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).equalTo("categoryId", categoryId).findAll();
+    }
+
+
+    public static void setItemUnChecked(int id, boolean toast, Context context) {
+        Realm.getDefaultInstance().beginTransaction();
+        Item item = Realm.getDefaultInstance().where(Item.class).equalTo("id", id).findFirst();
+        if (item != null) {
+            item.setChecked(false);
+            if (toast) {
+                Toast.makeText(context, R.string.widget_item_complete, Toast.LENGTH_SHORT).show();
+            }
+        }
+        Realm.getDefaultInstance().commitTransaction();
+    }
+
     public static void toggleCheck(Item item) {
         Realm.getDefaultInstance().beginTransaction();
         item.setChecked(!item.getChecked());
         Realm.getDefaultInstance().commitTransaction();
+
     }
 }
