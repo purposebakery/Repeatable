@@ -11,13 +11,16 @@ public class BaseActivity extends AppCompatActivity {
 
     protected String CLASS_TAG = this.getClass().getName();
 
+    private Realm realm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Realm.init(this);
+
         RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(config);
+        realm = Realm.getInstance(config);
 
         Preferences.init(this);
     }
@@ -25,7 +28,10 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        realm.close();
+    }
 
-        Realm.getDefaultInstance().close();
+    public Realm getRealm() {
+        return realm;
     }
 }

@@ -8,8 +8,6 @@ import de.techlung.repeatable.preferences.Preferences;
 public class WidgetService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        Preferences.init(this);
-
         return new WidgetViewsFactory(this.getApplicationContext(), intent);
     }
 }

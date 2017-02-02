@@ -31,7 +31,7 @@ public abstract class AbstractExpandableDataProvider {
 
     public abstract void removeChildItem(int groupPosition, int childPosition);
 
-    public abstract void removeGroupItem(int groupPosition);
+    public abstract void removeGroup(int groupPosition);
 
     public abstract void addChildItem(int groupPosition, int childPosition);
 

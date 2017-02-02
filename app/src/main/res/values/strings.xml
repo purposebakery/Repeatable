@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Repeatable Notes</string>
+    <string name="action_login">Login for Backup</string>
     <string name="action_create_backup">Export Backup</string>
     <string name="action_load_backup">Import Backup</string>
     <string name="action_about">About</string>
+    <string name="action_help">Help</string>
 
     <string name="alert_ok">OK</string>
+    <string name="alert_create">Create</string>
     <string name="alert_cancel">Cancel</string>
     <string name="alert_delete">Delete</string>
 
@@ -12,17 +15,28 @@
     <string name="category_name">Name</string>
     <string name="category_color">Color</string>
 
-    <string name="item">Item</string>
+    <string name="item">Task</string>
     <string name="item_name">Name</string>
 
+    <string name="item_controller_select_all">Select all</string>
+    <string name="item_controller_save_state">Save</string>
+    <string name="item_controller_save_state_toast">Saved current state of tasks.</string>
+    <string name="item_controller_load_state">Load</string>
+    <string name="item_controller_load_state_toast">Loaded last saved state of tasks.</string>
+
     <string name="about_title">About</string>
-    <string name="about_messagae">by Oliver Metz for Ella \nhttps://github.com/techlung/Repeatable\n\n</string>
+    <string name="about_messagae">by Oliver for Ella \nhttps://github.com/techlung/Repeatable\n\n</string>
     <string name="about_icon_credit">App Icon made by Freepik from www.flaticon.com is licensed by CC 3.0 BY</string>
+
+    <string name="help_title">Help</string>
+    <string name="help_messagae">This app is supposed to be used in combination with the app widget.\n\nDrag one to your home screen and select a note category. Of course you can also create multiple widgets with different categories. \n\nIf all tasks of a category repeat themselves regularly, save the your initial tasks state and load it again once you have completed all of that category.</string>
 
     <string name="widget_config">Repeatable Notes Widget Settings</string>
     <string name="widget_config_select_category">Select a Category</string>
     <string name="widget_config_all_categories">ALL CATEGORIES</string>
-    <string name="widget_item_complete">Item completed</string>
+    <string name="widget_item_complete">Tasks completed</string>
     <string name="widget_loading">Loading…</string>
+
+    <string name="backup_not_connect">Error: Not connected to Google</string>
 
 </resources>

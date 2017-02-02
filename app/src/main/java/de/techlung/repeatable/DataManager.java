@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -22,19 +25,22 @@ import io.realm.RealmQuery;
 public class DataManager {
     private static final String TAG = DataManager.class.getName();
 
-    public static void createOrEditItem(Context context, @NonNull final Category category, @Nullable Item item, final DialogInterface.OnClickListener listener) {
+    // Main Activity only
+    public static void createOrEditItem(final Context context, @NonNull final Category category, @Nullable Item item, final DialogInterface.OnClickListener listener) {
         Log.d(TAG, "creating Item");
         final Item editItem;
         final boolean isNew;
 
+        final Realm realm = MainActivity.getInstance().getRealm();
+
         if (item == null) {
             isNew = true;
 
-            Realm.getDefaultInstance().beginTransaction();
-            editItem = Realm.getDefaultInstance().createObject(Item.class, Item.createPrimaryKey());
+            realm.beginTransaction();
+            editItem = realm.createObject(Item.class, Item.createPrimaryKey(realm));
             editItem.setCategory(category);
             editItem.setCategoryId(category.getId());
-            Realm.getDefaultInstance().commitTransaction();
+            realm.commitTransaction();
         } else {
             isNew = false;
             editItem = item;
@@ -56,10 +62,10 @@ public class DataManager {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Log.d(TAG, "item deleted");
-                    Realm.getDefaultInstance().beginTransaction();
+                    realm.beginTransaction();
                     category.getItems().remove(editItem);
                     editItem.deleteFromRealm();
-                    Realm.getDefaultInstance().commitTransaction();
+                    realm.commitTransaction();
 
                     listener.onClick(dialog, which);
                     dialog.dismiss();
@@ -72,25 +78,26 @@ public class DataManager {
             public void onClick(DialogInterface dialog, int which) {
                 if (isNew) {
                     Log.d(TAG, "item deleted");
-                    Realm.getDefaultInstance().beginTransaction();
+                    realm.beginTransaction();
                     editItem.deleteFromRealm();
-                    Realm.getDefaultInstance().commitTransaction();
+                    realm.commitTransaction();
                 }
 
                 dialog.dismiss();
             }
         });
 
-        builder.setPositiveButton(R.string.alert_ok, new DialogInterface.OnClickListener() {
+        @StringRes int positive = isNew ? R.string.alert_create : R.string.alert_ok;
+        builder.setPositiveButton(positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(TAG, "category written");
-                Realm.getDefaultInstance().beginTransaction();
+                realm.beginTransaction();
                 editItem.setName(name.getText().toString());
                 if (isNew) {
                     category.getItems().add(editItem);
                 }
-                Realm.getDefaultInstance().commitTransaction();
+                realm.commitTransaction();
 
                 listener.onClick(dialog, which);
                 dialog.dismiss();
@@ -100,17 +107,20 @@ public class DataManager {
         builder.show();
     }
 
+    // Main Activity only
     public static void createOrEditCategory(Context context, @Nullable Category category, final DialogInterface.OnClickListener listener) {
         Log.d(TAG, "creating Category");
         final Category editCategory;
         final boolean isNew;
 
+        final Realm realm = MainActivity.getInstance().getRealm();
+
         if (category == null) {
             isNew = true;
 
-            Realm.getDefaultInstance().beginTransaction();
-            editCategory = Realm.getDefaultInstance().createObject(Category.class, Category.createPrimaryKey());
-            Realm.getDefaultInstance().commitTransaction();
+            realm.beginTransaction();
+            editCategory = realm.createObject(Category.class, Category.createPrimaryKey(realm));
+            realm.commitTransaction();
         } else {
             isNew = false;
             editCategory = category;
@@ -155,12 +165,10 @@ public class DataManager {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Log.d(TAG, "category deleted");
-                    Realm.getDefaultInstance().beginTransaction();
-                    for (Item item : editCategory.getItems()) {
-                        item.deleteFromRealm();
-                    }
+                    realm.beginTransaction();
+                    editCategory.getItems().deleteAllFromRealm();
                     editCategory.deleteFromRealm();
-                    Realm.getDefaultInstance().commitTransaction();
+                    realm.commitTransaction();
 
                     listener.onClick(dialog, which);
                     dialog.dismiss();
@@ -173,26 +181,25 @@ public class DataManager {
             public void onClick(DialogInterface dialog, int which) {
                 if (isNew) {
                     Log.d(TAG, "category deleted");
-                    Realm.getDefaultInstance().beginTransaction();
-                    for (Item item : editCategory.getItems()) {
-                        item.deleteFromRealm();
-                    }
+                    realm.beginTransaction();
+                    editCategory.getItems().deleteAllFromRealm();
                     editCategory.deleteFromRealm();
-                    Realm.getDefaultInstance().commitTransaction();
+                    realm.commitTransaction();
                 }
 
                 dialog.dismiss();
             }
         });
 
-        builder.setPositiveButton(R.string.alert_ok, new DialogInterface.OnClickListener() {
+        @StringRes int positive = isNew ? R.string.alert_create : R.string.alert_ok;
+        builder.setPositiveButton(positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.d(TAG, "category written");
-                Realm.getDefaultInstance().beginTransaction();
+                realm.beginTransaction();
                 editCategory.setName(name.getText().toString());
                 editCategory.setColorIndex(seekBar.getProgress());
-                Realm.getDefaultInstance().commitTransaction();
+                realm.commitTransaction();
 
                 listener.onClick(dialog, which);
                 dialog.dismiss();
@@ -202,51 +209,110 @@ public class DataManager {
         builder.show();
     }
 
-    public static List<Category> getAllCategories() {
-        RealmQuery<Category> query = Realm.getDefaultInstance().where(Category.class);
+
+    // Main Activity only
+    public static void selectAllItemsOfCategory(int categoryId) {
+        final Realm realm = MainActivity.getInstance().getRealm();
+
+
+        boolean noneUnchecked = (realm.where(Item.class).equalTo("categoryId", categoryId).equalTo("isChecked", false).count() == 0);
+
+        realm.beginTransaction();
+        for (Item item : realm.where(Item.class).equalTo("categoryId", categoryId).findAll()) {
+            item.setChecked(!noneUnchecked);
+        }
+        realm.commitTransaction();
+    }
+
+    // Main Activity only
+    public static void saveItemStateOfCategory(int categoryId) {
+        final Realm realm = MainActivity.getInstance().getRealm();
+
+        realm.beginTransaction();
+        for (Item item :realm.where(Item.class).equalTo("categoryId", categoryId).findAll()) {
+            item.setCheckedSaved(item.getChecked());
+        }
+        realm.commitTransaction();
+    }
+
+    // Main Activity only
+    public static void loadItemStateOfCategory(int categoryId) {
+        final Realm realm = MainActivity.getInstance().getRealm();
+
+        realm.beginTransaction();
+        for (Item item :realm.where(Item.class).equalTo("categoryId", categoryId).findAll()) {
+            item.setChecked(item.isCheckedSaved());
+        }
+        realm.commitTransaction();
+    }
+
+    public static List<Category> getAllCategories(Realm realm) {
+        RealmQuery<Category> query = realm.where(Category.class);
         return query.findAll();
     }
 
-    public static Category getCategory(int id) {
-        RealmQuery<Category> query = Realm.getDefaultInstance().where(Category.class);
+    public static Category getCategory(Realm realm, int id) {
+        RealmQuery<Category> query = realm.where(Category.class);
         query.equalTo("id", id);
         return query.findFirst();
     }
 
 
+    public static long getAllItemsActiveCount(Realm realm) {
+        return realm.where(Item.class).equalTo("isChecked", true).count();
+    }
+
+    /*
     public static long getAllItemsActiveCount() {
-        return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).count();
+        return getAllItemsActiveCount(Realm.getDefaultInstance());
+    }*/
+
+    public static long getCategoryItemsActiveCount(int categoryId, Realm realm) {
+        return realm.where(Item.class).equalTo("isChecked", true).equalTo("categoryId", categoryId).count();
     }
 
+    /*
     public static long getCategoryItemsActiveCount(int categoryId) {
-        return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).equalTo("categoryId", categoryId).count();
-    }
+        return getCategoryItemsActiveCount(categoryId, Realm.getDefaultInstance());
+    }*/
 
+    /*
     public static List<Item> getAllItemsActive() {
-        return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).findAllSorted("categoryId");
+        return getAllItemsActive(Realm.getDefaultInstance());
+    }*/
+
+    public static List<Item> getAllItemsActive(Realm realm) {
+        return realm.where(Item.class).equalTo("isChecked", true).findAllSorted("categoryId");
     }
 
+    /*
     public static List<Item> getCategoryItemsActive(int categoryId) {
-        return Realm.getDefaultInstance().where(Item.class).equalTo("isChecked", true).equalTo("categoryId", categoryId).findAll();
+        return getCategoryItemsActive(categoryId, Realm.getDefaultInstance());
+    }*/
+
+    public static List<Item> getCategoryItemsActive(int categoryId, Realm realm) {
+        return realm.where(Item.class).equalTo("isChecked", true).equalTo("categoryId", categoryId).findAll();
     }
 
 
-    public static void setItemUnChecked(int id, boolean toast, Context context) {
-        Realm.getDefaultInstance().beginTransaction();
-        Item item = Realm.getDefaultInstance().where(Item.class).equalTo("id", id).findFirst();
+    public static void setItemUnChecked(Realm realm, int id, boolean toast, Context context) {
+        Log.d(TAG, "setItemUnChecked " + id);
+        realm.beginTransaction();
+        Item item = realm.where(Item.class).equalTo("id", id).findFirst();
         if (item != null) {
             item.setChecked(false);
             if (toast) {
                 Toast.makeText(context, R.string.widget_item_complete, Toast.LENGTH_SHORT).show();
             }
         }
-        Realm.getDefaultInstance().commitTransaction();
+        realm.commitTransaction();
     }
 
+    // Main Activity only
     public static void toggleCheck(Item item) {
-        Realm.getDefaultInstance().beginTransaction();
+        MainActivity.getInstance().getRealm().beginTransaction();
         item.setChecked(!item.getChecked());
-        Realm.getDefaultInstance().commitTransaction();
+        MainActivity.getInstance().getRealm().commitTransaction();
 
     }
 }

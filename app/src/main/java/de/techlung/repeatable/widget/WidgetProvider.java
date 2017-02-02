@@ -23,7 +23,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     private static final String CHECK_ACTION = "CHECK_ACTION";
 
-    public static void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    public static void updateWidget(Realm realm, Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews widget = new RemoteViews(context.getPackageName(), R.layout.widget_overview);
 
         Intent listIntent = new Intent(context, WidgetService.class);
@@ -42,16 +42,20 @@ public class WidgetProvider extends AppWidgetProvider {
         widget.setOnClickPendingIntent(R.id.widgetRoot, pendingIntent);
 
         int categoryId = WidgetStore.getWidgetCategoryId(appWidgetId);
+        Category category = null;
         if (categoryId != WidgetStore.ILLEGAL_CATEGORY_ID && categoryId != WidgetStore.ALL_CATEGORIES) {
-            Category category = DataManager.getCategory(categoryId);
-            if (category != null) {
-                widget.setTextViewText(R.id.title, category.getName());
-            }
+            category = DataManager.getCategory(realm, categoryId);
         }
+
+        if (category != null) {
+            widget.setTextViewText(R.id.title, category.getName());
+        } else {
+            widget.setTextViewText(R.id.title, context.getString(R.string.app_name));
+        }
+
 
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);
         appWidgetManager.updateAppWidget(appWidgetId, widget);
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);
     }
 
     public static void reloadWidgets(Context context) {
@@ -70,35 +74,39 @@ public class WidgetProvider extends AppWidgetProvider {
 
         Realm.init(context);
         RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(config);
+        Realm realm = Realm.getInstance(config);
 
         for (int appWidgetId : appWidgetIds) {
-            updateWidget(context, appWidgetManager, appWidgetId);
+            updateWidget(realm, context, appWidgetManager, appWidgetId);
         }
+
+        realm.close();
 
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        AppWidgetManager manager = AppWidgetManager.getInstance(context);
         if (intent.getAction().equals(CHECK_ACTION)) {
-            //int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+            Realm.init(context);
+            RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+            Realm realm = Realm.getInstance(config);
 
             int itemId = intent.getIntExtra(WidgetViewsFactory.ITEM_ID, -1);
 
-            Realm.init(context);
-            RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-            Realm.setDefaultConfiguration(config);
+            DataManager.setItemUnChecked(realm, itemId, true, context);
 
-            DataManager.setItemUnChecked(itemId, true, context);
+            realm.close();
 
             reloadWidgets(context);
         } else if (intent.getAction().equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
+
             int[] ids = intent.getExtras().getIntArray(WIDGET_IDS_KEY);
             if (ids != null) {
+                AppWidgetManager manager = AppWidgetManager.getInstance(context);
                 this.onUpdate(context, manager, ids);
             }
+            //reloadWidgets(context);
         }
 
         super.onReceive(context, intent);

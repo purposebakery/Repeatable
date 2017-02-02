@@ -56,7 +56,7 @@ public class WidgetConfigureActivity extends BaseActivity {
 
         Log.d("WidgetConfigureActivity", "Continued");
 
-        final List<Category> categories = DataManager.getAllCategories();
+        final List<Category> categories = DataManager.getAllCategories(getRealm());
 
         adapter = new OverviewWidgetConfigureListAdapter(this, R.layout.repeatable_list_category, categories);
         list.setAdapter(adapter);
@@ -71,7 +71,7 @@ public class WidgetConfigureActivity extends BaseActivity {
                 }
 
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(WidgetConfigureActivity.this);
-                WidgetProvider.updateWidget(WidgetConfigureActivity.this, appWidgetManager, appWidgetId);
+                WidgetProvider.updateWidget(getRealm(), WidgetConfigureActivity.this, appWidgetManager, appWidgetId);
 
                 Intent resultValue = new Intent();
                 resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);

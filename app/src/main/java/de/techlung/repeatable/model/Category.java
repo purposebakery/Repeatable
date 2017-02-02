@@ -8,16 +8,16 @@ import io.realm.annotations.PrimaryKey;
 public class Category extends RealmObject {
 
     @PrimaryKey
-    int id;
+    private int id;
 
-    String name;
-    int colorIndex;
-    RealmList<Item> items;
+    private String name;
+    private int colorIndex;
+    private RealmList<Item> items;
 
-    public static int createPrimaryKey() {
-        Number lastCategory = Realm.getDefaultInstance().where(Category.class).max("id");
+    public static int createPrimaryKey(Realm realm) {
+        Number lastCategory = realm.where(Category.class).max("id");
         if (lastCategory == null) {
-            return 1;
+            return 1000;
         } else {
             return lastCategory.intValue() + 1;
         }

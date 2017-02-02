@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import de.techlung.repeatable.R;
 import io.realm.Realm;
 
 public class BackupManager {
@@ -32,8 +33,8 @@ public class BackupManager {
     Activity activity;
     private int REQUEST_CODE_PICKER = 2;
     private int REQUEST_CODE_SELECT = 3;
-    private Backup backup;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleDriveBackup backup;
+    private GoogleApiClient googleApiClient;
     private IntentSender intentPicker;
     private Realm realm;
 
@@ -44,8 +45,13 @@ public class BackupManager {
         backup = new GoogleDriveBackup();
         backup.init(activity);
 
+        googleApiClient = backup.getClient();
+
         connectClient();
-        mGoogleApiClient = backup.getClient();
+    }
+
+    public GoogleApiClient getGoogleApiClient() {
+        return googleApiClient;
     }
 
     public void destroy() {
@@ -53,29 +59,33 @@ public class BackupManager {
     }
 
     public void openFilePicker() {
-        //        build an intent that we'll use to start the open file activity
-        IntentSender intentSender = Drive.DriveApi
-                .newOpenFileActivityBuilder()
-//                these mimetypes enable these folders/files types to be selected
-                .setMimeType(new String[]{DriveFolder.MIME_TYPE, "text/plain"})
-                .build(mGoogleApiClient);
-        try {
-            activity.startIntentSenderForResult(
-                    intentSender, REQUEST_CODE_SELECT, null, 0, 0, 0);
-        } catch (IntentSender.SendIntentException e) {
-            Log.e(TAG, "Unable to send intent", e);
-            showErrorDialog();
+        if (googleApiClient != null && googleApiClient.isConnected()) {
+            try {
+                IntentSender intentSender = Drive.DriveApi
+                    .newOpenFileActivityBuilder()
+                    .setMimeType(new String[]{DriveFolder.MIME_TYPE, "text/plain"})
+                    .build(googleApiClient);
+
+                activity.startIntentSenderForResult(
+                        intentSender, REQUEST_CODE_SELECT, null, 0, 0, 0);
+            } catch (IntentSender.SendIntentException e) {
+                Log.e(TAG, "Unable to send intent", e);
+                showErrorDialog();
+            }
+        } else {
+            Toast.makeText(activity, R.string.backup_not_connect, Toast.LENGTH_SHORT).show();
         }
     }
 
     public void openFolderPicker() {
         try {
-            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            if (googleApiClient != null && googleApiClient.isConnected()) {
                 if (intentPicker == null)
                     intentPicker = buildIntent();
                 //Start the picker to choose a folder
-                activity.startIntentSenderForResult(
-                        intentPicker, REQUEST_CODE_PICKER, null, 0, 0, 0);
+                activity.startIntentSenderForResult(intentPicker, REQUEST_CODE_PICKER, null, 0, 0, 0);
+            } else {
+                Toast.makeText(activity, R.string.backup_not_connect, Toast.LENGTH_SHORT).show();
             }
         } catch (IntentSender.SendIntentException e) {
             Log.e(TAG, "Unable to send intent", e);
@@ -87,11 +97,11 @@ public class BackupManager {
         return Drive.DriveApi
                 .newOpenFileActivityBuilder()
                 .setMimeType(new String[]{DriveFolder.MIME_TYPE})
-                .build(mGoogleApiClient);
+                .build(googleApiClient);
     }
 
     private void downloadFromDrive(DriveFile file) {
-        file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null)
+        file.open(googleApiClient, DriveFile.MODE_READ_ONLY, null)
                 .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
                     @Override
                     public void onResult(DriveApi.DriveContentsResult result) {
@@ -145,7 +155,7 @@ public class BackupManager {
         if (mFolderDriveId != null) {
             //Create the file on GDrive
             final DriveFolder folder = mFolderDriveId.asDriveFolder();
-            Drive.DriveApi.newDriveContents(mGoogleApiClient)
+            Drive.DriveApi.newDriveContents(googleApiClient)
                     .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
                         @Override
                         public void onResult(DriveApi.DriveContentsResult result) {
@@ -186,23 +196,21 @@ public class BackupManager {
 
 
                                     MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                                            .setTitle("glucosio.realm")
+                                            .setTitle("repeatable.realm")
                                             .setMimeType("text/plain")
                                             .build();
 
                                     // create a file in selected folder
-                                    folder.createFile(mGoogleApiClient, changeSet, driveContents)
+                                    folder.createFile(googleApiClient, changeSet, driveContents)
                                             .setResultCallback(new ResultCallback<DriveFolder.DriveFileResult>() {
                                                 @Override
                                                 public void onResult(DriveFolder.DriveFileResult result) {
                                                     if (!result.getStatus().isSuccess()) {
                                                         Log.d(TAG, "Error while trying to create the file");
                                                         showErrorDialog();
-                                                        activity.finish();
                                                         return;
                                                     }
                                                     showSuccessDialog();
-                                                    activity.finish();
                                                 }
                                             });
                                 }

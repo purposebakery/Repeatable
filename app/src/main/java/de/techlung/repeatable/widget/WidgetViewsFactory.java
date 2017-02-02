@@ -13,6 +13,7 @@ import de.techlung.repeatable.Constants;
 import de.techlung.repeatable.DataManager;
 import de.techlung.repeatable.R;
 import de.techlung.repeatable.model.Item;
+import de.techlung.repeatable.preferences.Preferences;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -24,12 +25,13 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context context;
     private Intent intent;
 
-    private int appWidgetId;
     private int categoryId = WidgetStore.ILLEGAL_CATEGORY_ID;
 
     private WidgetType type;
 
     WidgetViewsFactory(Context context, Intent intent) {
+        Preferences.init(context);
+
         this.context = context;
         this.intent = intent;
     }
@@ -38,11 +40,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     public void onCreate() {
         Log.d(TAG, "onCreate");
 
-        Realm.init(context);
-        RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(config);
-
-        appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         categoryId = WidgetStore.getWidgetCategoryId(appWidgetId);
 
         if (categoryId != WidgetStore.ILLEGAL_CATEGORY_ID && categoryId != WidgetStore.ALL_CATEGORIES) {
@@ -55,30 +53,48 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onDestroy() {
-        Realm.getDefaultInstance().close();
         Log.d(TAG, "onDestroy");
-
     }
 
     @Override
     public int getCount() {
+
+
+        Realm.init(context);
+        Realm.removeDefaultConfiguration();
+        RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+        Realm instance = Realm.getInstance(config);
+
+
+        int count;
         if (type == WidgetType.ALL) {
-            return (int) DataManager.getAllItemsActiveCount();
+            count = (int) DataManager.getAllItemsActiveCount(instance);
         } else {
-            return (int) DataManager.getCategoryItemsActiveCount(categoryId);
+            count = (int) DataManager.getCategoryItemsActiveCount(categoryId, instance);
         }
+
+        instance.close();
+
+        Log.d(TAG, "getCount: " + count + " for category " + categoryId + " in type " + type.name());
+
+        return count;
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
         Log.d(TAG, "getViewAt " + position);
 
+        Realm.init(context);
+        Realm.removeDefaultConfiguration();
+        RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+        Realm instance = Realm.getInstance(config);
+
         Item item;
 
         if (type == WidgetType.ALL) {
-            item = DataManager.getAllItemsActive().get(position);
+            item = DataManager.getAllItemsActive(instance).get(position);
         } else {
-            item = DataManager.getCategoryItemsActive(categoryId).get(position);
+            item = DataManager.getCategoryItemsActive(categoryId, instance).get(position);
         }
 
         RemoteViews row = new RemoteViews(context.getPackageName(), R.layout.widget_overview_list_item);
@@ -91,6 +107,8 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
         row.setOnClickFillInIntent(R.id.widgetOverViewRowRoot, fillInIntent);
+
+        instance.close();
 
         return row;
     }

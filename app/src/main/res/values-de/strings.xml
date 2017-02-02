@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wiedernotizen</string>
+    <string name="action_login">Anmelden für Backup</string>
+    <string name="action_create_backup">Export Backup</string>
+    <string name="action_load_backup">Import Backup</string>
+    <string name="action_about">Über</string>
+    <string name="action_help">Hilfe</string>
+
+    <string name="alert_ok">OK</string>
+    <string name="alert_create">Erstellen</string>
+    <string name="alert_cancel">Abbrechen</string>
+    <string name="alert_delete">Löschen</string>
+
+    <string name="category">Kategorie</string>
+    <string name="category_name">Name</string>
+    <string name="category_color">Farbe</string>
+
+    <string name="item">Aufgabe</string>
+    <string name="item_name">Name</string>
+
+    <string name="item_controller_select_all">Alle auswählen</string>
+    <string name="item_controller_save_state">Speichen</string>
+    <string name="item_controller_save_state_toast">Aktueller Status der Aufgaben abgespeichert.</string>
+    <string name="item_controller_load_state">Laden</string>
+    <string name="item_controller_load_state_toast">Letzter Status der Aufgaben geladen.</string>
+
+    <string name="about_title">Über</string>
+    <string name="about_messagae">von Oliver für Ella \nhttps://github.com/techlung/Repeatable\n\n</string>
+    <string name="about_icon_credit">App Icon made by Freepik from www.flaticon.com is licensed by CC 3.0 BY</string>
+
+    <string name="help_title">Hilfe</string>
+    <string name="help_messagae">Diese App soll in Kombination mit dem Widget genutzt werden.\n\nZiehe eins auf dein Homescreen und wähle eine Kategorie aus. Natürlich kannst du auch mehrere Widgets mit unterschiedlichen Kategorien erstellen.\n\nFalls sich alle Aufgaben einer Kategorie wiederholen kannst du deren initialen Zustand speichern und beim Abschließen aller Aufgaben diesen Zustand wiederherstellen.</string>
+
+    <string name="widget_config">Wiedernotizen Widget Einstellungen</string>
+    <string name="widget_config_select_category">Wähle eine Kategorie</string>
+    <string name="widget_config_all_categories">ALLE KATEGORIEN</string>
+    <string name="widget_item_complete">Aufgabe erledigt</string>
+    <string name="widget_loading">Laden…</string>
+
+    <string name="backup_not_connect">Fehler: nicht mit Google verbunden.</string>
+</resources>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "211282322589",
+    "project_id": "repeatable-157412"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211282322589:android:be837db817bbf60c",
+        "android_client_info": {
+          "package_name": "de.techlung.repeatable"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "211282322589-st0tm2m0rpbvk7gf2ib7j1qlmoo9eq80.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfsvcpQZg6RC5Lti4jMo0Cq5m27tgkTUM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

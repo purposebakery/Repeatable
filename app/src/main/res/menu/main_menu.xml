@@ -2,6 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.techlung.repeatable.MainActivity">
+
+    <item
+        android:id="@+id/login"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="@string/action_login"
+        app:showAsAction="never" />
+
     <item
         android:id="@+id/createBackup"
         android:icon="@drawable/ic_cloud_upload_black_24dp"
@@ -15,7 +22,14 @@
 
     <item
         android:id="@+id/about"
-        android:icon="@drawable/ic_info_outline_white_24dp"
+        android:icon="@drawable/ic_info_outline_black_24dp"
         android:title="@string/action_about"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/help"
+        android:icon="@drawable/ic_help_outline_white_24dp"
+        android:title="@string/action_help"
+        app:showAsAction="always"
+        />
 </menu>

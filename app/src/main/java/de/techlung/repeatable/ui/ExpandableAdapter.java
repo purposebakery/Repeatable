@@ -23,9 +23,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.h6ah4i.android.widget.advrecyclerview.expandable.ExpandableItemConstants;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemAdapter;
@@ -41,6 +43,10 @@ import de.techlung.repeatable.widget.WidgetProvider;
 
 public class ExpandableAdapter
         extends AbstractExpandableItemAdapter<ExpandableAdapter.MyGroupViewHolder, ExpandableAdapter.MyChildViewHolder> {
+
+    private static final int VIEW_TYPE_ITEM = 0;
+    private static final int VIEW_TYPE_ITEM_CONTROL = 1;
+
     private static final String TAG = "MyExpandableItemAdapter";
     private AbstractExpandableDataProvider provider;
     private Context context;
@@ -61,7 +67,7 @@ public class ExpandableAdapter
 
     @Override
     public int getChildCount(int groupPosition) {
-        return provider.getChildCount(groupPosition);
+        return provider.getChildCount(groupPosition) + 1;
     }
 
     @Override
@@ -71,7 +77,13 @@ public class ExpandableAdapter
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return provider.getChildItem(groupPosition, childPosition).getId();
+
+        if (childPosition == provider.getChildCount(groupPosition)) {
+            return groupPosition + 2000; // Item Controll element
+        } else {
+            return provider.getChildItem(groupPosition, childPosition).getId();
+        }
+
     }
 
     @Override
@@ -81,7 +93,11 @@ public class ExpandableAdapter
 
     @Override
     public int getChildItemViewType(int groupPosition, int childPosition) {
-        return 0;
+        if (childPosition == provider.getChildCount(groupPosition)) {
+            return VIEW_TYPE_ITEM_CONTROL;
+        } else {
+            return VIEW_TYPE_ITEM;
+        }
     }
 
     @Override
@@ -94,8 +110,15 @@ public class ExpandableAdapter
     @Override
     public MyChildViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View v = inflater.inflate(R.layout.repeatable_list_item, parent, false);
-        return new MyChildViewHolder(v);
+
+        if (viewType == VIEW_TYPE_ITEM) {
+            final View v = inflater.inflate(R.layout.repeatable_list_item, parent, false);
+            return new MyChildItemViewHolder(v);
+        } else {
+            final View v = inflater.inflate(R.layout.repeatable_list_item_controller, parent, false);
+            return new MyChildControllerViewHolder(v);
+        }
+
     }
 
     @Override
@@ -122,8 +145,8 @@ public class ExpandableAdapter
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == DialogInterface.BUTTON_POSITIVE) {
                             provider.editedGroup(groupPosition);
-                        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
-                            provider.removeGroupItem(groupPosition);
+                        } else if (which == DialogInterface.BUTTON_NEUTRAL) {
+                            provider.removeGroup(groupPosition);
                         }
                     }
                 });
@@ -154,69 +177,107 @@ public class ExpandableAdapter
         // set background resource (target view ID: container)
         final int expandState = holder.getExpandStateFlags();
 
-        if ((expandState & ExpandableItemConstants.STATE_FLAG_IS_UPDATED) != 0) {
-            int bgResId;
-            int openIcon;
+        int bgResId;
+        int openIcon;
 
-            if ((expandState & Expandable.STATE_FLAG_IS_EXPANDED) != 0) {
-                bgResId = Constants.COLOR_RESOURCE_IDS[category.getColorIndex()];
-                openIcon = R.drawable.ic_keyboard_arrow_up_black_24dp;
-            } else {
-                bgResId = android.R.color.white;
-                openIcon = R.drawable.ic_keyboard_arrow_down_black_24dp;
-            }
-
-            holder.container.setBackgroundResource(bgResId);
-            holder.openIcon.setImageResource(openIcon);
+        if ((expandState & Expandable.STATE_FLAG_IS_EXPANDED) != 0) {
+            bgResId = Constants.COLOR_RESOURCE_IDS[category.getColorIndex()];
+            openIcon = R.drawable.ic_keyboard_arrow_up_black_24dp;
+        } else {
+            bgResId = android.R.color.white;
+            openIcon = R.drawable.ic_keyboard_arrow_down_black_24dp;
         }
+
+        holder.container.setBackgroundResource(bgResId);
+        holder.openIcon.setImageResource(openIcon);
     }
 
     @Override
-    public void onBindChildViewHolder(final MyChildViewHolder holder, final int groupPosition, final int childPosition, int viewType) {
-        // group item
-        final Item item = provider.getChildItem(groupPosition, childPosition);
+    public void onBindChildViewHolder(final MyChildViewHolder holderGeneric, final int groupPosition, final int childPosition, int viewType) {
         final Category category = provider.getGroupItem(groupPosition);
 
-        holder.colorIndicator.setBackgroundResource(Constants.COLOR_RESOURCE_IDS[category.getColorIndex()]);
+        if (viewType == VIEW_TYPE_ITEM) {
+            final MyChildItemViewHolder holder = (MyChildItemViewHolder) holderGeneric;
 
-        // set text
-        holder.name.setText(item.getName());
-        holder.checkBox.setChecked(item.getChecked());
+            // group item
+            final Item item = provider.getChildItem(groupPosition, childPosition);
 
-        View.OnClickListener clickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DataManager.toggleCheck(item);
-                holder.checkBox.setChecked(item.getChecked());
+            holder.colorIndicator.setBackgroundResource(Constants.COLOR_RESOURCE_IDS[category.getColorIndex()]);
 
-                WidgetProvider.reloadWidgets(context);
-            }
-        };
+            // set text
+            holder.name.setText(item.getName());
+            holder.checkBox.setChecked(item.getChecked());
 
-        holder.checkBox.setOnClickListener(clickListener);
-        holder.container.setOnClickListener(clickListener);
+            View.OnClickListener clickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataManager.toggleCheck(item);
+                    holder.checkBox.setChecked(item.getChecked());
 
-        // set background resource (target view ID: container)
-        int bgResId;
-        bgResId = android.R.color.white;
-        holder.container.setBackgroundResource(bgResId);
+                    WidgetProvider.reloadWidgets(context);
+                }
+            };
 
+            holder.checkBox.setOnClickListener(clickListener);
+            holder.container.setOnClickListener(clickListener);
 
-        holder.edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DataManager.createOrEditItem(context, provider.getGroupItem(groupPosition), item, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == DialogInterface.BUTTON_NEGATIVE) {
-                            provider.removeChildItem(groupPosition, childPosition);
-                        } else if (which == DialogInterface.BUTTON_POSITIVE) {
-                            provider.editedChild(groupPosition, childPosition);
+            // set background resource (target view ID: container)
+            int bgResId;
+            bgResId = android.R.color.white;
+            holder.container.setBackgroundResource(bgResId);
+
+            holder.edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataManager.createOrEditItem(context, provider.getGroupItem(groupPosition), item, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (which == DialogInterface.BUTTON_NEUTRAL) {
+                                provider.removeChildItem(groupPosition, childPosition);
+                            } else if (which == DialogInterface.BUTTON_POSITIVE) {
+                                provider.editedChild(groupPosition, childPosition);
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        } else {
+            final MyChildControllerViewHolder holder = (MyChildControllerViewHolder) holderGeneric;
+
+            holder.container.setBackgroundResource(Constants.COLOR_RESOURCE_IDS[category.getColorIndex()]);
+
+            holder.selectAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataManager.selectAllItemsOfCategory(category.getId());
+                    notifyAllChildrenEdited(groupPosition);
+                }
+            });
+
+            holder.save.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataManager.saveItemStateOfCategory(category.getId());
+                    Toast.makeText(context, R.string.item_controller_save_state_toast, Toast.LENGTH_SHORT).show();
+                    notifyAllChildrenEdited(groupPosition);
+                }
+            });
+
+            holder.load.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataManager.loadItemStateOfCategory(category.getId());
+                    Toast.makeText(context, R.string.item_controller_load_state_toast, Toast.LENGTH_SHORT).show();
+                    notifyAllChildrenEdited(groupPosition);
+                }
+            });
+        }
+    }
+
+    private void notifyAllChildrenEdited(int groupPosition) {
+        for (int i = 0; i < provider.getChildCount(groupPosition); ++i) {
+            provider.editedChild(groupPosition, i);
+        }
     }
 
     private void handleOnClickGroupItemContainerView(int groupPosition) {
@@ -261,19 +322,41 @@ public class ExpandableAdapter
     }
 
     static class MyChildViewHolder extends AbstractExpandableItemViewHolder {
+
+        MyChildViewHolder(View v) {
+            super(v);
+        }
+    }
+
+    private static class MyChildItemViewHolder extends MyChildViewHolder {
         RelativeLayout container;
         TextView name;
         View edit;
         AppCompatCheckBox checkBox;
         View colorIndicator;
 
-        MyChildViewHolder(View v) {
+        MyChildItemViewHolder(View v) {
             super(v);
             container = (RelativeLayout) v.findViewById(R.id.container);
             name = (TextView) v.findViewById(R.id.name);
             edit = v.findViewById(R.id.edit);
             checkBox = (AppCompatCheckBox) v.findViewById(R.id.checked);
             colorIndicator = v.findViewById(R.id.colorIndicator);
+        }
+    }
+
+    private static class MyChildControllerViewHolder extends MyChildViewHolder {
+        RelativeLayout container;
+        Button selectAll;
+        Button save;
+        Button load;
+
+        MyChildControllerViewHolder(View v) {
+            super(v);
+            container = (RelativeLayout) v.findViewById(R.id.container);
+            selectAll = (Button) v.findViewById(R.id.select_all);
+            save = (Button) v.findViewById(R.id.save);
+            load = (Button) v.findViewById(R.id.load);
         }
     }
 }
