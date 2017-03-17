@@ -55,6 +55,11 @@ public class WidgetConfigureActivity extends BaseActivity {
         }
 
         Log.d("WidgetConfigureActivity", "Continued");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         final List<Category> categories = DataManager.getAllCategories(getRealm());
 
@@ -79,6 +84,7 @@ public class WidgetConfigureActivity extends BaseActivity {
                 finish();
             }
         });
+
     }
 
     static class ViewHolder {
@@ -114,7 +120,6 @@ public class WidgetConfigureActivity extends BaseActivity {
                 LayoutInflater inflater = LayoutInflater.from(WidgetConfigureActivity.this);
                 convertView = inflater.inflate(R.layout.repeatable_list_category, parent, false);
             }
-
 
             Category category = null;
             if (position != 0) {

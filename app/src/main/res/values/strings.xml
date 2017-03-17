@@ -18,7 +18,7 @@
     <string name="item">Task</string>
     <string name="item_name">Name</string>
 
-    <string name="item_controller_select_all">Select all</string>
+    <string name="item_controller_select_all">Deselect all</string>
     <string name="item_controller_save_state">Save</string>
     <string name="item_controller_save_state_toast">Saved current state of tasks.</string>
     <string name="item_controller_load_state">Load</string>
@@ -38,5 +38,8 @@
     <string name="widget_loading">Loading…</string>
 
     <string name="backup_not_connect">Error: Not connected to Google</string>
+    <string name="backup_success">Backup success</string>
+    <string name="backup_failure">Backup failure</string>
+    <string name="backup_restart">Restarting app</string>
 
 </resources>

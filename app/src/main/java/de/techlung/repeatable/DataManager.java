@@ -211,15 +211,14 @@ public class DataManager {
 
 
     // Main Activity only
-    public static void selectAllItemsOfCategory(int categoryId) {
+    public static void deselectAllItemsOfCategory(int categoryId) {
         final Realm realm = MainActivity.getInstance().getRealm();
 
-
-        boolean noneUnchecked = (realm.where(Item.class).equalTo("categoryId", categoryId).equalTo("isChecked", false).count() == 0);
+        boolean allUnchecked = (realm.where(Item.class).equalTo("categoryId", categoryId).equalTo("isChecked", true).count() == 0);
 
         realm.beginTransaction();
         for (Item item : realm.where(Item.class).equalTo("categoryId", categoryId).findAll()) {
-            item.setChecked(!noneUnchecked);
+            item.setChecked(allUnchecked);
         }
         realm.commitTransaction();
     }
@@ -259,7 +258,7 @@ public class DataManager {
 
 
     public static long getAllItemsActiveCount(Realm realm) {
-        return realm.where(Item.class).equalTo("isChecked", true).count();
+        return realm.where(Item.class).equalTo("isChecked", false).count();
     }
 
     /*
@@ -268,7 +267,7 @@ public class DataManager {
     }*/
 
     public static long getCategoryItemsActiveCount(int categoryId, Realm realm) {
-        return realm.where(Item.class).equalTo("isChecked", true).equalTo("categoryId", categoryId).count();
+        return realm.where(Item.class).equalTo("isChecked", false).equalTo("categoryId", categoryId).count();
     }
 
     /*
@@ -282,7 +281,7 @@ public class DataManager {
     }*/
 
     public static List<Item> getAllItemsActive(Realm realm) {
-        return realm.where(Item.class).equalTo("isChecked", true).findAllSorted("categoryId");
+        return realm.where(Item.class).equalTo("isChecked", false).findAllSorted("categoryId");
     }
 
     /*
@@ -291,16 +290,16 @@ public class DataManager {
     }*/
 
     public static List<Item> getCategoryItemsActive(int categoryId, Realm realm) {
-        return realm.where(Item.class).equalTo("isChecked", true).equalTo("categoryId", categoryId).findAll();
+        return realm.where(Item.class).equalTo("isChecked", false).equalTo("categoryId", categoryId).findAll();
     }
 
 
-    public static void setItemUnChecked(Realm realm, int id, boolean toast, Context context) {
-        Log.d(TAG, "setItemUnChecked " + id);
+    public static void setItemChecked(Realm realm, int id, boolean toast, Context context) {
+        Log.d(TAG, "setItemChecked " + id);
         realm.beginTransaction();
         Item item = realm.where(Item.class).equalTo("id", id).findFirst();
         if (item != null) {
-            item.setChecked(false);
+            item.setChecked(true);
             if (toast) {
                 Toast.makeText(context, R.string.widget_item_complete, Toast.LENGTH_SHORT).show();
             }

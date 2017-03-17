@@ -94,7 +94,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
             int itemId = intent.getIntExtra(WidgetViewsFactory.ITEM_ID, -1);
 
-            DataManager.setItemUnChecked(realm, itemId, true, context);
+            DataManager.setItemChecked(realm, itemId, true, context);
 
             realm.close();
 

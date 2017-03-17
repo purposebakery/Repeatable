@@ -19,7 +19,7 @@
     <string name="item">Aufgabe</string>
     <string name="item_name">Name</string>
 
-    <string name="item_controller_select_all">Alle auswählen</string>
+    <string name="item_controller_select_all">Keine auswählen</string>
     <string name="item_controller_save_state">Speichen</string>
     <string name="item_controller_save_state_toast">Aktueller Status der Aufgaben abgespeichert.</string>
     <string name="item_controller_load_state">Laden</string>
@@ -39,4 +39,7 @@
     <string name="widget_loading">Laden…</string>
 
     <string name="backup_not_connect">Fehler: nicht mit Google verbunden.</string>
+    <string name="backup_success">Backup erfolgreich</string>
+    <string name="backup_failure">Backup gescheitert</string>
+    <string name="backup_restart">App wird neu gestartet</string>
 </resources>

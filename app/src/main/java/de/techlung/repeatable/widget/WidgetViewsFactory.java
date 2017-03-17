@@ -19,7 +19,8 @@ import io.realm.RealmConfiguration;
 
 class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
-    public static final String ITEM_ID = "ITEM_ID";
+    static final String ITEM_ID = "ITEM_ID";
+
     private static final String TAG = WidgetViewsFactory.class.getName();
 
     private Context context;
@@ -58,13 +59,9 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public int getCount() {
-
-
         Realm.init(context);
-        Realm.removeDefaultConfiguration();
         RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
         Realm instance = Realm.getInstance(config);
-
 
         int count;
         if (type == WidgetType.ALL) {
@@ -85,7 +82,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         Log.d(TAG, "getViewAt " + position);
 
         Realm.init(context);
-        Realm.removeDefaultConfiguration();
         RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
         Realm instance = Realm.getInstance(config);
 

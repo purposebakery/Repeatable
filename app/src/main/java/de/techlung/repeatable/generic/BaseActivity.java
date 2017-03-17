@@ -17,19 +17,26 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Realm.init(this);
-
-        RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
-        realm = Realm.getInstance(config);
 
         Preferences.init(this);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+
+        Realm.init(this);
+
+        RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+        realm = Realm.getInstance(config);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         realm.close();
     }
+
 
     public Realm getRealm() {
         return realm;

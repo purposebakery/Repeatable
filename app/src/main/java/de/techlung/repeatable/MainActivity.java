@@ -77,9 +77,6 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
             }
         });
 
-        categoryList.addAll(DataManager.getAllCategories(getRealm()));
-
-        initList(savedInstanceState);
     }
 
     @Override
@@ -88,6 +85,15 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
         if (backupManager != null) {
             backupManager.destroy();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        initList();
+
+        categoryList.addAll(DataManager.getAllCategories(getRealm()));
     }
 
     private void initBackupManager() {
@@ -167,11 +173,10 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
         });
     }
 
-    private void initList(Bundle savedInstanceState) {
+    private void initList() {
         layoutManager = new LinearLayoutManager(this);
 
-        final Parcelable eimSavedState = (savedInstanceState != null) ? savedInstanceState.getParcelable(SAVED_STATE_EXPANDABLE_ITEM_MANAGER) : null;
-        itemManager = new RecyclerViewExpandableItemManager(eimSavedState);
+        itemManager = new RecyclerViewExpandableItemManager(null);
         itemManager.setOnGroupExpandListener(this);
         itemManager.setOnGroupCollapseListener(this);
         itemManager.setDefaultGroupsExpandedState(false);

@@ -249,7 +249,7 @@ public class ExpandableAdapter
             holder.selectAll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DataManager.selectAllItemsOfCategory(category.getId());
+                    DataManager.deselectAllItemsOfCategory(category.getId());
                     notifyAllChildrenEdited(groupPosition);
                 }
             });
