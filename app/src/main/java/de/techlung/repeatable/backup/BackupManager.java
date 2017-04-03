@@ -26,11 +26,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import de.techlung.repeatable.R;
+import de.techlung.repeatable.generic.BaseActivity;
 import io.realm.Realm;
 
 public class BackupManager {
     private static final String TAG = "BackupManager";
-    Activity activity;
+    BaseActivity activity;
     private int REQUEST_CODE_PICKER = 2;
     private int REQUEST_CODE_SELECT = 3;
     private GoogleDriveBackup backup;
@@ -38,9 +39,9 @@ public class BackupManager {
     private IntentSender intentPicker;
     private Realm realm;
 
-    public BackupManager(Activity activity) {
+    public BackupManager(BaseActivity activity) {
         this.activity = activity;
-        realm = Realm.getDefaultInstance();
+        realm = activity.getRealm();
 
         backup = new GoogleDriveBackup();
         backup.init(activity);
@@ -143,7 +144,7 @@ public class BackupManager {
                             }
                         }
 
-                        Toast.makeText(activity, "Restarting App", Toast.LENGTH_LONG).show();
+                        Toast.makeText(activity, R.string.backup_restart, Toast.LENGTH_LONG).show();
 
                         // Reboot app
                         activity.recreate();
@@ -253,18 +254,17 @@ public class BackupManager {
                 } else {
                     showErrorDialog();
                 }
-                activity.finish();
                 break;
 
         }
     }
 
     private void showSuccessDialog() {
-        Toast.makeText(activity, "Backup success", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, R.string.backup_success, Toast.LENGTH_SHORT).show();
     }
 
     private void showErrorDialog() {
-        Toast.makeText(activity, "Backup failed", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, R.string.backup_failure, Toast.LENGTH_SHORT).show();
     }
 
     private void connectClient() {

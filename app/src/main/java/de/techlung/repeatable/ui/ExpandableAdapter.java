@@ -37,6 +37,7 @@ import com.h6ah4i.android.widget.advrecyclerview.utils.RecyclerViewAdapterUtils;
 import de.techlung.repeatable.Constants;
 import de.techlung.repeatable.DataManager;
 import de.techlung.repeatable.R;
+import de.techlung.repeatable.generic.BaseActivity;
 import de.techlung.repeatable.model.Category;
 import de.techlung.repeatable.model.Item;
 import de.techlung.repeatable.widget.WidgetProvider;
@@ -47,13 +48,12 @@ public class ExpandableAdapter
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_ITEM_CONTROL = 1;
 
-    private static final String TAG = "MyExpandableItemAdapter";
     private AbstractExpandableDataProvider provider;
-    private Context context;
+    private BaseActivity activity;
 
-    public ExpandableAdapter(Context context, AbstractExpandableDataProvider dataProvider) {
+    public ExpandableAdapter(BaseActivity activity, AbstractExpandableDataProvider dataProvider) {
         this.provider = dataProvider;
-        this.context = context;
+        this.activity = activity;
 
         // ExpandableItemAdapter requires stable ID, and also
         // have to implement the getGroupItemId()/getChildItemId() methods appropriately.
@@ -140,7 +140,7 @@ public class ExpandableAdapter
                     return;
                 }
 
-                DataManager.createOrEditCategory(context, category, new DialogInterface.OnClickListener() {
+                DataManager.createOrEditCategory(activity, category, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == DialogInterface.BUTTON_POSITIVE) {
@@ -156,7 +156,7 @@ public class ExpandableAdapter
         holder.add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DataManager.createOrEditItem(context, category, null, new DialogInterface.OnClickListener() {
+                DataManager.createOrEditItem(activity, category, null, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == DialogInterface.BUTTON_POSITIVE) {
@@ -211,10 +211,10 @@ public class ExpandableAdapter
             View.OnClickListener clickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DataManager.toggleCheck(item);
+                    DataManager.toggleCheck(activity, item);
                     holder.checkBox.setChecked(item.getChecked());
 
-                    WidgetProvider.reloadWidgets(context);
+                    WidgetProvider.reloadWidgets(activity);
                 }
             };
 
@@ -229,7 +229,7 @@ public class ExpandableAdapter
             holder.edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DataManager.createOrEditItem(context, provider.getGroupItem(groupPosition), item, new DialogInterface.OnClickListener() {
+                    DataManager.createOrEditItem(activity, provider.getGroupItem(groupPosition), item, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (which == DialogInterface.BUTTON_NEUTRAL) {
@@ -249,7 +249,7 @@ public class ExpandableAdapter
             holder.selectAll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DataManager.deselectAllItemsOfCategory(category.getId());
+                    DataManager.deselectAllItemsOfCategory(activity, category.getId());
                     notifyAllChildrenEdited(groupPosition);
                 }
             });
@@ -257,8 +257,8 @@ public class ExpandableAdapter
             holder.save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DataManager.saveItemStateOfCategory(category.getId());
-                    Toast.makeText(context, R.string.item_controller_save_state_toast, Toast.LENGTH_SHORT).show();
+                    DataManager.saveItemStateOfCategory(activity, category.getId());
+                    Toast.makeText(activity, R.string.item_controller_save_state_toast, Toast.LENGTH_SHORT).show();
                     notifyAllChildrenEdited(groupPosition);
                 }
             });
@@ -266,8 +266,8 @@ public class ExpandableAdapter
             holder.load.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DataManager.loadItemStateOfCategory(category.getId());
-                    Toast.makeText(context, R.string.item_controller_load_state_toast, Toast.LENGTH_SHORT).show();
+                    DataManager.loadItemStateOfCategory(activity, category.getId());
+                    Toast.makeText(activity, R.string.item_controller_load_state_toast, Toast.LENGTH_SHORT).show();
                     notifyAllChildrenEdited(groupPosition);
                 }
             });

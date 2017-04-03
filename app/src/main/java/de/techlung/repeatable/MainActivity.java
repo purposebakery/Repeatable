@@ -3,7 +3,6 @@ package de.techlung.repeatable;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -31,14 +30,9 @@ import de.techlung.repeatable.model.Category;
 import de.techlung.repeatable.model.Item;
 import de.techlung.repeatable.ui.AbstractExpandableDataProvider;
 import de.techlung.repeatable.ui.ExpandableAdapter;
-import io.realm.Realm;
-
 
 public class MainActivity extends BaseActivity implements RecyclerViewExpandableItemManager.OnGroupCollapseListener,
         RecyclerViewExpandableItemManager.OnGroupExpandListener {
-
-    private static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewExpandableItemManager";
-    private static MainActivity instance;
 
     @InjectView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -48,25 +42,22 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
     Toolbar toolbar;
 
     private List<Category> categoryList = new ArrayList<>();
-    private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
     private RecyclerViewExpandableItemManager itemManager;
 
     private BackupManager backupManager;
 
-    public static MainActivity getInstance() {
-        return instance;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MainActivity.instance = this;
-
         setContentView(R.layout.main_activity);
 
         ButterKnife.inject(this);
+
+        loadList();
+        initList();
 
         setSupportActionBar(toolbar);
 
@@ -76,7 +67,6 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
                 addCategory();
             }
         });
-
     }
 
     @Override
@@ -91,9 +81,6 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
     protected void onResume() {
         super.onResume();
 
-        initList();
-
-        categoryList.addAll(DataManager.getAllCategories(getRealm()));
     }
 
     private void initBackupManager() {
@@ -174,8 +161,6 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
     }
 
     private void initList() {
-        layoutManager = new LinearLayoutManager(this);
-
         itemManager = new RecyclerViewExpandableItemManager(null);
         itemManager.setOnGroupExpandListener(this);
         itemManager.setOnGroupCollapseListener(this);
@@ -192,7 +177,7 @@ public class MainActivity extends BaseActivity implements RecyclerViewExpandable
         // Need to disable them when using animation indicator.
         animator.setSupportsChangeAnimations(false);
 
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);  // requires *wrapped* adapter
         recyclerView.setItemAnimator(animator);
         recyclerView.setHasFixedSize(false);

@@ -40,6 +40,6 @@
     <string name="backup_not_connect">Error: Not connected to Google</string>
     <string name="backup_success">Backup success</string>
     <string name="backup_failure">Backup failure</string>
-    <string name="backup_restart">Restarting app</string>
+    <string name="backup_restart">Backup import successful</string>
 
 </resources>

@@ -30,7 +30,7 @@ class GoogleDriveBackup implements GoogleApiClient.OnConnectionFailedListener {
         this.activityRef = new WeakReference<>(activity);
 
         googleApiClient = new GoogleApiClient.Builder(activity)
-                .enableAutoManage(MainActivity.getInstance(), this)
+                .enableAutoManage((MainActivity) activity, this)
                 .addApi(Drive.API)
                 .addScope(Drive.SCOPE_FILE)
                 .build();

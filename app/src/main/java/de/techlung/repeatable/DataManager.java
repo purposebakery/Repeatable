@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import de.techlung.repeatable.generic.BaseActivity;
 import de.techlung.repeatable.model.Category;
 import de.techlung.repeatable.model.Item;
 import io.realm.Realm;
@@ -26,12 +27,12 @@ public class DataManager {
     private static final String TAG = DataManager.class.getName();
 
     // Main Activity only
-    public static void createOrEditItem(final Context context, @NonNull final Category category, @Nullable Item item, final DialogInterface.OnClickListener listener) {
+    public static void createOrEditItem(final BaseActivity activity, @NonNull final Category category, @Nullable Item item, final DialogInterface.OnClickListener listener) {
         Log.d(TAG, "creating Item");
         final Item editItem;
         final boolean isNew;
 
-        final Realm realm = MainActivity.getInstance().getRealm();
+        final Realm realm = activity.getRealm();
 
         if (item == null) {
             isNew = true;
@@ -46,11 +47,11 @@ public class DataManager {
             editItem = item;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setCancelable(false);
         builder.setTitle(R.string.item);
 
-        View view = LayoutInflater.from(context).inflate(R.layout.item_edit_dialog, null, false);
+        View view = LayoutInflater.from(activity).inflate(R.layout.item_edit_dialog, null, false);
         builder.setView(view);
 
         final TextInputEditText name = (TextInputEditText) view.findViewById(R.id.name);
@@ -108,12 +109,12 @@ public class DataManager {
     }
 
     // Main Activity only
-    public static void createOrEditCategory(Context context, @Nullable Category category, final DialogInterface.OnClickListener listener) {
+    public static void createOrEditCategory(BaseActivity activity, @Nullable Category category, final DialogInterface.OnClickListener listener) {
         Log.d(TAG, "creating Category");
         final Category editCategory;
         final boolean isNew;
 
-        final Realm realm = MainActivity.getInstance().getRealm();
+        final Realm realm = activity.getRealm();
 
         if (category == null) {
             isNew = true;
@@ -126,11 +127,11 @@ public class DataManager {
             editCategory = category;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setCancelable(false);
         builder.setTitle(R.string.category);
 
-        View view = LayoutInflater.from(context).inflate(R.layout.category_edit_dialog, null, false);
+        View view = LayoutInflater.from(activity).inflate(R.layout.category_edit_dialog, null, false);
         builder.setView(view);
 
         final TextInputEditText name = (TextInputEditText) view.findViewById(R.id.name);
@@ -211,8 +212,8 @@ public class DataManager {
 
 
     // Main Activity only
-    public static void deselectAllItemsOfCategory(int categoryId) {
-        final Realm realm = MainActivity.getInstance().getRealm();
+    public static void deselectAllItemsOfCategory(BaseActivity activity, int categoryId) {
+        final Realm realm = activity.getRealm();
 
         boolean allUnchecked = (realm.where(Item.class).equalTo("categoryId", categoryId).equalTo("isChecked", true).count() == 0);
 
@@ -224,8 +225,8 @@ public class DataManager {
     }
 
     // Main Activity only
-    public static void saveItemStateOfCategory(int categoryId) {
-        final Realm realm = MainActivity.getInstance().getRealm();
+    public static void saveItemStateOfCategory(BaseActivity activity, int categoryId) {
+        final Realm realm = activity.getRealm();
 
         realm.beginTransaction();
         for (Item item :realm.where(Item.class).equalTo("categoryId", categoryId).findAll()) {
@@ -235,8 +236,8 @@ public class DataManager {
     }
 
     // Main Activity only
-    public static void loadItemStateOfCategory(int categoryId) {
-        final Realm realm = MainActivity.getInstance().getRealm();
+    public static void loadItemStateOfCategory(BaseActivity activity, int categoryId) {
+        final Realm realm = activity.getRealm();
 
         realm.beginTransaction();
         for (Item item :realm.where(Item.class).equalTo("categoryId", categoryId).findAll()) {
@@ -308,10 +309,10 @@ public class DataManager {
     }
 
     // Main Activity only
-    public static void toggleCheck(Item item) {
-        MainActivity.getInstance().getRealm().beginTransaction();
+    public static void toggleCheck(BaseActivity activity, Item item) {
+        activity.getRealm().beginTransaction();
         item.setChecked(!item.getChecked());
-        MainActivity.getInstance().getRealm().commitTransaction();
+        activity.getRealm().commitTransaction();
 
     }
 }

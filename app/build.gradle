@@ -51,12 +51,12 @@ apply plugin: 'realm-android'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:design:25.1.0'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:design:25.2.0'
 
-    compile 'com.google.android.gms:play-services-plus:10.0.1'
-    compile 'com.google.android.gms:play-services-auth:10.0.1'
-    compile 'com.google.android.gms:play-services-drive:10.0.1'
+    compile 'com.google.android.gms:play-services-plus:10.2.0'
+    compile 'com.google.android.gms:play-services-auth:10.2.0'
+    compile 'com.google.android.gms:play-services-drive:10.2.0'
 
     compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.2@aar') {
         transitive = true

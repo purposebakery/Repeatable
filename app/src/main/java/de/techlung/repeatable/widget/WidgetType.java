@@ -1,5 +1,5 @@
 package de.techlung.repeatable.widget;
 
-public enum WidgetType {
+enum WidgetType {
     ALL, CATEGORY
 }

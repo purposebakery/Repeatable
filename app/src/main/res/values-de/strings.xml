@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Wiedernotizen</string>
+    <string name="app_name">Wieder-Notizen</string>
     <string name="action_login">Anmelden für Backup</string>
     <string name="action_create_backup">Export Backup</string>
     <string name="action_load_backup">Import Backup</string>
@@ -20,12 +20,12 @@
     <string name="item_name">Name</string>
 
     <string name="item_controller_select_all">Keine auswählen</string>
-    <string name="item_controller_save_state">Speichen</string>
+    <string name="item_controller_save_state">Speichern</string>
     <string name="item_controller_save_state_toast">Aktueller Status der Aufgaben abgespeichert.</string>
     <string name="item_controller_load_state">Laden</string>
     <string name="item_controller_load_state_toast">Letzter Status der Aufgaben geladen.</string>
 
-    <string name="about_title">Über</string>
+    <string name="about_title">Wieder-Notizen</string>
     <string name="about_messagae">von Oliver für Ella \nhttps://github.com/techlung/Repeatable\n\n</string>
     <string name="about_icon_credit">App Icon made by Freepik from www.flaticon.com is licensed by CC 3.0 BY</string>
 
@@ -41,5 +41,5 @@
     <string name="backup_not_connect">Fehler: nicht mit Google verbunden.</string>
     <string name="backup_success">Backup erfolgreich</string>
     <string name="backup_failure">Backup gescheitert</string>
-    <string name="backup_restart">App wird neu gestartet</string>
+    <string name="backup_restart">Backup wiederherstellung erfolgreich</string>
 </resources>

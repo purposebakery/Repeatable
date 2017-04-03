@@ -39,7 +39,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "onCreate");
 
         int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         categoryId = WidgetStore.getWidgetCategoryId(appWidgetId);
@@ -54,7 +53,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
     }
 
     @Override
@@ -72,15 +70,11 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         instance.close();
 
-        Log.d(TAG, "getCount: " + count + " for category " + categoryId + " in type " + type.name());
-
         return count;
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
-        Log.d(TAG, "getViewAt " + position);
-
         Realm.init(context);
         RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
         Realm instance = Realm.getInstance(config);
@@ -131,7 +125,5 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onDataSetChanged() {
-        // no-op
-        Log.d("WidgetViewsFactory", "onDataSetChanged");
     }
 }
