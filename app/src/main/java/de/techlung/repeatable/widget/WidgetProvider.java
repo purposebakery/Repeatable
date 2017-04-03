@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
+import de.techlung.repeatable.Constants;
 import de.techlung.repeatable.DataManager;
 import de.techlung.repeatable.MainActivity;
 import de.techlung.repeatable.R;
@@ -49,8 +50,10 @@ public class WidgetProvider extends AppWidgetProvider {
 
         if (category != null) {
             widget.setTextViewText(R.id.title, category.getName());
+            widget.setImageViewResource(R.id.titleBackground, Constants.COLOR_RESOURCE_IDS[category.getColorIndex()]);
         } else {
             widget.setTextViewText(R.id.title, context.getString(R.string.app_name));
+            widget.setImageViewResource(R.id.titleBackground, R.color.md_white_1000);
         }
 
 
